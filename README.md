@@ -121,7 +121,150 @@ Care was taken to ensure that both input systems do not interfere with each othe
 
 ---
 
-## 10. Testing and Results
+## 10. Code
+
+#define CUSTOM_SETTINGS
+#define INCLUDE_GAMEPAD_MODULE
+
+#include <Dabble.h>
+#include <SoftwareSerial.h>
+#include <SPI.h>
+#include <MFRC522.h>
+
+const int enA = 6;
+const int in1 = 4;
+const int in2 = 5;
+
+const int enB = 9;
+const int in3 = 7;
+const int in4 = 8;
+
+int motorSpeed = 180;
+
+SoftwareSerial BTSerial(2, 3);
+
+#define SS_PIN 10
+#define RST_PIN A0
+MFRC522 mfrc522(SS_PIN, RST_PIN);
+
+// UID-uri (SCHIMBĂ CU ALE TALE)
+byte card1[4] = {0x19, 0x22, 0xFD, 0x03};
+byte card2[4] = {0x11, 0x22, 0x33, 0x44};
+byte card3[4] = {0xAA, 0xBB, 0xCC, 0xDD};
+
+bool c1 = false;
+bool c2 = false;
+bool c3 = false;
+
+const int ledPin = A1;
+
+void setup() {
+  pinMode(enA, OUTPUT);
+  pinMode(in1, OUTPUT);
+  pinMode(in2, OUTPUT);
+
+  pinMode(enB, OUTPUT);
+  pinMode(in3, OUTPUT);
+  pinMode(in4, OUTPUT);
+
+  pinMode(ledPin, OUTPUT);
+
+  Serial.begin(9600);
+  BTSerial.begin(9600);
+  Dabble.begin(BTSerial);
+
+  SPI.begin();
+  mfrc522.PCD_Init();
+}
+
+void loop() {
+  Dabble.processInput();
+  if (GamePad.isUpPressed()) moveForward();
+  else if (GamePad.isDownPressed()) moveBackward();
+  else if (GamePad.isLeftPressed()) turnLeft();
+  else if (GamePad.isRightPressed()) turnRight();
+  else stopMotors();
+  if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
+
+    if (compareUID(mfrc522.uid.uidByte, card1) && !c1) {
+      c1 = true;
+      blinkLed();
+    }
+    else if (compareUID(mfrc522.uid.uidByte, card2) && !c2) {
+      c2 = true;
+      blinkLed();
+    }
+    else if (compareUID(mfrc522.uid.uidByte, card3) && !c3) {
+      c3 = true;
+      blinkLed();
+    }
+
+    mfrc522.PICC_HaltA();
+  }
+  if (c1 && c2 && c3) {
+    digitalWrite(ledPin, HIGH); // rămâne aprins
+  }
+}
+bool compareUID(byte *a, byte *b) {
+  for (byte i = 0; i < 4; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
+}
+
+void blinkLed() {
+  digitalWrite(ledPin, HIGH);
+  delay(200);
+  digitalWrite(ledPin, LOW);
+}
+void moveForward() {
+  analogWrite(enA, motorSpeed);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  analogWrite(enB, motorSpeed);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+}
+
+void moveBackward() {
+  analogWrite(enA, motorSpeed);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+
+  analogWrite(enB, motorSpeed);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+
+void turnLeft() {
+  analogWrite(enA, motorSpeed);
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, HIGH);
+
+  analogWrite(enB, motorSpeed);
+  digitalWrite(in3, HIGH);
+  digitalWrite(in4, LOW);
+}
+
+void turnRight() {
+  analogWrite(enA, motorSpeed);
+  digitalWrite(in1, HIGH);
+  digitalWrite(in2, LOW);
+
+  analogWrite(enB, motorSpeed);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, HIGH);
+}
+
+void stopMotors() {
+  digitalWrite(in1, LOW);
+  digitalWrite(in2, LOW);
+  digitalWrite(in3, LOW);
+  digitalWrite(in4, LOW);
+}
+
+## 11. Testing and Results
 
 ### Bluetooth subsystem
 - Stable connection within short range (~8–10 meters)
@@ -137,7 +280,7 @@ Care was taken to ensure that both input systems do not interfere with each othe
 
 ---
 
-## 11. Challenges and Solutions
+## 12. Challenges and Solutions
 
 ### Motor imbalance
 One motor exhibited slightly higher speed.
@@ -160,7 +303,7 @@ Both systems initially interfered during continuous polling.
 
 ---
 
-## 12. Limitations
+## 13. Limitations
 
 - No advanced security encryption for RFID  
 - Limited range for Bluetooth communication  
@@ -169,7 +312,7 @@ Both systems initially interfered during continuous polling.
 
 ---
 
-## 13. Future Improvements
+## 14. Future Improvements
 
 - Integration of ultrasonic sensors for obstacle avoidance  
 - Improved RFID security with encrypted authentication  
@@ -179,7 +322,7 @@ Both systems initially interfered during continuous polling.
 
 ---
 
-## 14. Conclusion
+## 15. Conclusion
 
 This project demonstrates a functional embedded system combining wireless control and RFID-based identification.
 
@@ -189,14 +332,14 @@ It provided hands-on experience in embedded architecture design, hardware integr
 
 ---
 
-## 15. Authors
+## 16. Authors
 
 Aetherion Robotics Team  
 Student Engineering Project  
 
 ---
 
-## 16. Attachments
+## 17. Attachments
 
 <img width="1200" height="1600" alt="c026456f-af67-45d5-888b-a3bc65c6bfe1" src="https://github.com/user-attachments/assets/3983cc29-3531-4da1-938e-f8395b90b799" />
 
