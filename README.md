@@ -196,5 +196,4 @@ Student Engineering Project
 
 ---
 
-<img width="4032" height="3024" alt="ACVN3593" src="https://github.com/user-attachments/assets/cce1243f-dd73-4608-8f9b-1d35e912402d" />
 
