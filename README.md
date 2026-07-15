@@ -147,7 +147,6 @@ SoftwareSerial BTSerial(2, 3);
 #define RST_PIN A0
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
-// UID-uri (SCHIMBĂ CU ALE TALE)
 byte card1[4] = {0x19, 0x22, 0xFD, 0x03};
 byte card2[4] = {0x11, 0x22, 0x33, 0x44};
 byte card3[4] = {0xAA, 0xBB, 0xCC, 0xDD};
@@ -163,15 +162,19 @@ void setup() {
   pinMode(in1, OUTPUT);
   pinMode(in2, OUTPUT);
 
+
   pinMode(enB, OUTPUT);
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
 
+
   pinMode(ledPin, OUTPUT);
+
 
   Serial.begin(9600);
   BTSerial.begin(9600);
   Dabble.begin(BTSerial);
+
 
   SPI.begin();
   mfrc522.PCD_Init();
@@ -179,10 +182,14 @@ void setup() {
 
 void loop() {
   Dabble.processInput();
+ 
   if (GamePad.isUpPressed()) moveForward();
   else if (GamePad.isDownPressed()) moveBackward();
+ 
   else if (GamePad.isLeftPressed()) turnLeft();
+  
   else if (GamePad.isRightPressed()) turnRight();
+ 
   else stopMotors();
   if (mfrc522.PICC_IsNewCardPresent() && mfrc522.PICC_ReadCardSerial()) {
 
@@ -202,7 +209,7 @@ void loop() {
     mfrc522.PICC_HaltA();
   }
   if (c1 && c2 && c3) {
-    digitalWrite(ledPin, HIGH); // rămâne aprins
+    digitalWrite(ledPin, HIGH);-
   }
 }
 bool compareUID(byte *a, byte *b) {
