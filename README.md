@@ -121,7 +121,7 @@ Care was taken to ensure that both input systems do not interfere with each othe
 
 ---
 
-## 10. Code
+## 10. Code - Arduino IDE
 
 #define CUSTOM_SETTINGS
 #define INCLUDE_GAMEPAD_MODULE
